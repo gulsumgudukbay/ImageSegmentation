@@ -20,9 +20,7 @@ while 1
     quotient = zeros(1, dim);
     divisor = zeros(1, dim);
     
-    %gaussian mean calculation 
-    %source: "Mean Shift: A Robust Approach toward Feature Space Analysis"
-    for x=1:length(insideWindowIndices)
+    for x=1:length(insideWindowIndices) %change to 1 to n
         kprime = phi(((curLoc - data(insideWindowIndices(x), :)) / h).^2);
         divisor = divisor + kprime;
         quotient = quotient + curLoc .* kprime;
@@ -30,8 +28,7 @@ while 1
     
     mean = quotient ./ divisor;
     
-    %if the current location's distance to the mean is smaller than the
-    %stopping threshold, it has converged!
+    %if the current location 
     if(norm(curLoc-mean) < params(2))
         break; %converged!
     end
