@@ -8,8 +8,7 @@ img = imread('cs484_hw3_data/15088.jpg');
 
 stopThresh = 0.005;
 winSize = 150; %rgb
-% winSize = 0.87; %luv
-% winSize2 = 75; %xy
+
 params = [winSize stopThresh];
 [labels, peaks] = segmentImage(img, params);
 

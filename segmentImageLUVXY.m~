@@ -1,6 +1,20 @@
-function [labels, peaks] = segmentImage(image, params)
+function [labels, peaks] = segmentImageLUVXY(image, params)
 figure;
 imshow(image);
+
+%convert to luvxy
+xyz = rgb2xyz(image);
+luv_cform = makecform('xyz2uvl');
+image = applycform(xyz, luv_cform);
+[rows, cols, dim] = size(image);
+
+for i=1:rows
+    for j=1:cols
+        image(i,j,4) = i;
+        image(i,j,5) = j;
+    end
+end
+
 
 [rows, cols, dim] = size(image);
 image = double(image);
@@ -9,18 +23,26 @@ peaks = [];
 labels = zeros(rows * cols, 1);
 
 data = reshape(image, rows*cols, dim);
-tree = createns(data); %makes the search faster
+treeLUV = createns(data(:, 1:3)); %makes the search faster
+treeXY = createns(data(:, 4:5)); %makes the search faster
 noOfLabels = 0;
 
 for i=1:rows*cols
     
     if(labels(i) == 0) %not visited
         %get the data indices that are inside the window close to cur pixel
-        neighbors = [];
-        neighbors = rangesearch(tree, data(i,:), params(1));
-        neighbors = neighbors{1};
+        neighborsLUV = [];
+        neighborsLUV = rangesearch(treeLUV, data(i,1:3), params(1));
+        neighborsLUV = neighborsLUV{1};
+        
+        neighborsXY = [];
+        neighborsXY = rangesearch(treeXY, data(i,4:5), params(2));
+        neighborsXY = neighborsXY{1};
+        
+        [neighbors,ia,ib] = intersect(neighborsLUV, neighborsXY);
+        
         %find peak of current pixel
-        curPeak = meanshift(data, i, params);
+        curPeak = meanshiftLUVXY(data, i, params);
         if (isempty(peaks))
             noOfLabels = noOfLabels + 1;
             peaks(noOfLabels,:) = curPeak(:);
@@ -32,7 +54,7 @@ for i=1:rows*cols
         merged = 0;
         %check if it can be merged
         for p=1:noOfPeaks
-            if(noOfPeaks > 1 && norm(curPeak - peaks(p)) <= params(1)/2) %merge!
+            if(noOfPeaks > 1 && norm(curPeak(3:5), peaks(p, 3:5)) <= params(1)/2 && norm(curPeak(3:, peaks(p)) <= params(1)/2) %merge!
                 peaks(p,:) = (peaks(p,:) + curPeak)/2; %new mean for merged peaks
                 labels(i) = p; %CHECK
                 labels(neighbors) = p; %CHECK
