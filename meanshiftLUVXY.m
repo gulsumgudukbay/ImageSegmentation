@@ -7,7 +7,7 @@ sigma = 1;
 h = std(data) * (4/3/n)^(1/5); % Silverman's rule of thumb (wiki)
 phi = @(x)(exp(-.5 * x.^2) / sqrt(2*pi*sigma^2)); % normal pdf (wiki)
 
-treeLUV = createns(data(:, 1:3)); %makes the search faster
+treeLUV = createns(data(:, 1:2)); %makes the search faster
 treeXY = createns(data(:, 4:5)); %makes the search faster
 
 curLoc = data(i, :);
@@ -15,7 +15,7 @@ curLoc = data(i, :);
 while 1
     
     %get the data indices that are inside the window
-    insideWindowIndicesluv = rangesearch(treeLUV, curLoc(1:3), params(1));
+    insideWindowIndicesluv = rangesearch(treeLUV, curLoc(1:2), params(1));
     insideWindowIndicesluv = insideWindowIndicesluv{1};
     
     insideWindowIndicesxy = rangesearch(treeXY, curLoc(4:5), params(2));

@@ -10,8 +10,8 @@ image = applycform(xyz, luv_cform);
 
 for i=1:rows
     for j=1:cols
-        image(i,j,4) = i/rows;
-        image(i,j,5) = j/cols;
+        image(i,j,4) = i/rows*0.1;
+        image(i,j,5) = j/cols*0.1;
     end
 end
 
@@ -23,7 +23,7 @@ peaks = [];
 labels = zeros(rows * cols, 1);
 
 data = reshape(image, rows*cols, dim);
-treeLUV = createns(data(:, 1:3)); %makes the search faster
+treeLUV = createns(data(:, 1:2)); %makes the search faster
 treeXY = createns(data(:, 4:5)); %makes the search faster
 noOfLabels = 0;
 
@@ -32,7 +32,7 @@ for i=1:rows*cols
     if(labels(i) == 0) %not visited
         %get the data indices that are inside the window close to cur pixel
         neighborsLUV = [];
-        neighborsLUV = rangesearch(treeLUV, data(i,1:3), params(1));
+        neighborsLUV = rangesearch(treeLUV, data(i,1:2), params(1));
         neighborsLUV = neighborsLUV{1};
         
         neighborsXY = [];
@@ -54,7 +54,7 @@ for i=1:rows*cols
         merged = 0;
         %check if it can be merged
         for p=1:noOfPeaks
-            if(noOfPeaks > 1 && norm(curPeak(1:3) - peaks(p, 1:3)) <= params(1)/2 && norm(curPeak(4:5) - peaks(p, 4:5)) <= params(2)/2) %merge!
+            if(noOfPeaks > 1 && norm(curPeak(1:2) - peaks(p, 1:2)) <= params(1)/2 && norm(curPeak(4:5) - peaks(p, 4:5)) <= params(2)/2) %merge!
                 peaks(p,:) = (peaks(p,:) + curPeak)/2; %new mean for merged peaks
                 labels(i) = p; %CHECK
                 labels(neighbors) = p; %CHECK
