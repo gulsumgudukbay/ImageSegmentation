@@ -4,10 +4,10 @@ function peak = meanshift(data, i, params)
 
 %mean and deviation
 sigma = 1;
-h = std(data)*(4/3/n)^(1/5); % Silverman's rule of thumb (wiki)
-phi = @(x)(exp(-.5*x.^2)/sqrt(2*pi*sigma^2)); % normal pdf (wiki)
+h = std(data) * (4/3/n)^(1/5); % Silverman's rule of thumb (wiki)
+phi = @(x)(exp(-.5 * x.^2) / sqrt(2*pi*sigma^2)); % normal pdf (wiki)
 
-tree = createns(data);
+tree = createns(data); %makes the search faster
 curLoc = data(i, :);
 
 while 1
