@@ -10,13 +10,11 @@ image = applycform(xyz, luv_cform);
 
 for i=1:rows
     for j=1:cols
-        image(i,j,4) = i;
-        image(i,j,5) = j;
+        image(i,j,4) = i/rows;
+        image(i,j,5) = j/cols;
     end
 end
 
-image(:,:,4) = image(:,:,4) ./ max(image(:,:,4));
-image(:,:,5) = image(:,:,5) ./ max(image(:,:,5));
 
 [rows, cols, dim] = size(image);
 image = double(image);

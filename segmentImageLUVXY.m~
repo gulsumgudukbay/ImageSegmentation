@@ -10,11 +10,13 @@ image = applycform(xyz, luv_cform);
 
 for i=1:rows
     for j=1:cols
-        image(i,j,4) = i;
-        image(i,j,5) = j;
+        image(i,j,4) = i/rows;
+        image(i,j,5) = j/cols;
     end
 end
 
+image(:,:,4) = image(:,:,4) ./ max(image(:,:,4));
+image(:,:,5) = image(:,:,5) ./ max(image(:,:,5));
 
 [rows, cols, dim] = size(image);
 image = double(image);
@@ -54,7 +56,7 @@ for i=1:rows*cols
         merged = 0;
         %check if it can be merged
         for p=1:noOfPeaks
-            if(noOfPeaks > 1 && norm(curPeak(3:5), peaks(p, 3:5)) <= params(1)/2 && norm(curPeak(3:, peaks(p)) <= params(1)/2) %merge!
+            if(noOfPeaks > 1 && norm(curPeak(1:3) - peaks(p, 1:3)) <= params(1)/2 && norm(curPeak(4:5) - peaks(p, 4:5)) <= params(2)/2) %merge!
                 peaks(p,:) = (peaks(p,:) + curPeak)/2; %new mean for merged peaks
                 labels(i) = p; %CHECK
                 labels(neighbors) = p; %CHECK
