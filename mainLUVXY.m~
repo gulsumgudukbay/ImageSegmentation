@@ -1,0 +1,43 @@
+clc;
+close all;
+clear;
+
+
+img = imread('cs484_hw3_data/41004.jpg');
+
+stopThresh = 0.005;
+winSize = 0.035; %luv
+winSize2 = 0.1; %xy
+
+%mean shift detected edges
+params = [winSize winSize2 stopThresh];
+[labels, peaks] = segmentImageLUVXY(img, params);
+
+figure;
+rgb = label2rgb(labels);
+imshow(rgb);
+
+edge_rgb = edge(rgb2gray(rgb),'Canny');
+figure;
+imshow(edge_rgb);
+
+%true detected edges
+figure;
+img_seg = imread('cs484_hw3_data/41004_seg.png');
+imshow(label2rgb(img_seg));
+
+edge_img_seg = edge(rgb2gray(label2rgb(img_seg)),'Canny');
+figure;
+imshow(edge_img_seg);
+
+se = strel('disk', 1);
+edge_img_seg = imdilate(edge_img_seg, se);
+figure;
+imshow(edge_img_seg);
+
+%precision calculation
+true_detected_boundary_pixels = 0;
+true_detected_boundary_pixels = nnz(edge_rgb == 4);
+
+no_of_detected_boundary_pixels = 0;
+number_of_true_boundary_pixels_in_the_ground_truth = 0;
