@@ -38,7 +38,7 @@ end
 
 h = figure;
 name2 = extractAfter(extractBefore(name, '.'), '/');
-mytitle = sprintf('spectral_i/%s-%.3f-%.3f', name2, params(1), params(2));
+mytitle = sprintf('final_parameter_results/spectral-%s-%.3f-%.3f', name2, params(1), params(2));
 imshow(markedimg);
 title(mytitle);
 mytitle = strcat(mytitle, '.png');
