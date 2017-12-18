@@ -1,6 +1,6 @@
 function [labels, peaks] = segmentImageLUVXY(image, params)
-figure;
-imshow(image);
+%figure;
+%imshow(image);
 
 %convert to luvxy
 xyz = rgb2xyz(image);

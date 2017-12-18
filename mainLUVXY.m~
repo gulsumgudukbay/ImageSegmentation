@@ -1,13 +1,10 @@
-clc;
-close all;
-clear;
+function mainLUVXY = mainLUVXY(name, nameseg)
 
-
-img = imread('cs484_hw3_data/41004.jpg');
+img = imread(name);
 
 stopThresh = 0.005;
 winSize = 0.035; %luv
-winSize2 = 0.1; %xy
+winSize2 = 0.13; %xy
 
 %mean shift detected edges
 params = [winSize winSize2 stopThresh];
@@ -17,27 +14,50 @@ figure;
 rgb = label2rgb(labels);
 imshow(rgb);
 
-edge_rgb = edge(rgb2gray(rgb),'Canny');
+rgb = rgb2gray(rgb);
+edge_rgb = edge(rgb,'Canny');
 figure;
 imshow(edge_rgb);
 
 %true detected edges
 figure;
-img_seg = imread('cs484_hw3_data/41004_seg.png');
+img_seg = imread(nameseg);
 imshow(label2rgb(img_seg));
 
-edge_img_seg = edge(rgb2gray(label2rgb(img_seg)),'Canny');
-figure;
-imshow(edge_img_seg);
+img_seg = rgb2gray(label2rgb(img_seg));
+edge_img_seg = edge(img_seg,'Canny');
 
-se = strel('disk', 1);
+se = strel('disk', 2);
 edge_img_seg = imdilate(edge_img_seg, se);
 figure;
 imshow(edge_img_seg);
 
-%precision calculation
-true_detected_boundary_pixels = 0;
-true_detected_boundary_pixels = nnz(edge_rgb == 4);
+markedimg = img;
+[rows, cols, dim] = size(img);
+for i=1:rows
+    for j=1:cols
+        if(edge_rgb(i,j))
+            markedimg(i,j,1) = 255;
+        end
+    end
+end
 
-no_of_detected_boundary_pixels = 0;
-number_of_true_boundary_pixels_in_the_ground_truth = 0;
+h = figure;
+name2 = extractAfter(extractBefore(name, '.'), '/');
+mytitle = sprintf('%d  strcat(name2, '-', num2str(params(1)), '-', num2str(params(2)));
+imshow(markedimg);
+title(mytitle);
+mytitle = strcat(mytitle, 'png');
+saveas(h, mytitle);
+
+%precision calculations
+true_detected_boundary_pixels = nnz(edge_rgb & edge_img_seg);
+no_of_detected_boundary_pixels = nnz(edge_rgb);
+no_of_true_boundary_pixels_ground_truth = nnz(edge_img_seg);
+
+precision = true_detected_boundary_pixels / no_of_detected_boundary_pixels;
+recall = true_detected_boundary_pixels / no_of_true_boundary_pixels_ground_truth;
+
+fprintf('precision: %f\nrecall: %f\n', precision, recall);
+
+end

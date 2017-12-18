@@ -1,6 +1,11 @@
 function [labels, peaks] = segmentImage(image, params)
-figure;
-imshow(image);
+% figure;
+% imshow(image);
+
+%convert to luvxy
+xyz = rgb2xyz(image);
+luv_cform = makecform('xyz2uvl');
+image = applycform(xyz, luv_cform);
 
 [rows, cols, dim] = size(image);
 image = double(image);
